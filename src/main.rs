@@ -61,6 +61,8 @@ fn main() {
 
     dbg!(&contents);
     if contents.count() == 0 {
+        // write mode
+        config = File::create(&cnf_path).expect("Can't open config file");
         // Parse image list into a vec!
         // Maybe convert to json and write to file?
         // Filter to be any type of image! FEH supports these so it will use them:
@@ -76,7 +78,7 @@ fn main() {
         for img in &images {
             // write image to file
             println!("{}",&img);
-            writeln!(&mut config,"{}",&img).expect("Error writing lines to config");
+            writeln!(&mut config, "{}", &img).unwrap();
         }
     }
 
