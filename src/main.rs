@@ -3,8 +3,9 @@ use std::{env,fs};
 use walkdir::WalkDir;
 use rand::prelude::SliceRandom;
 use dirs::home_dir;
-use std::fs::File;
+use std::fs::{File,OpenOptions};
 use std::io::{BufReader,BufRead,Write};
+use rand::thread_rng;
 
 fn main() {
     // READ IN ARGUMENTS
@@ -44,25 +45,25 @@ fn main() {
     let mut cnf_path = home_dir().unwrap();
     cnf_path.push(".config/wallscroll/"); // CONFIG file path is /home/user/.config/wallscroll/config
     fs::create_dir_all(cnf_path.clone()).unwrap();
-    println!("{}",format!("Created {:?} successfully.",&cnf_path).bright_green());
+    // println!("{}",format!("Created {:?} successfully.",&cnf_path).bright_green());
     cnf_path.push(arg_name);
     if !std::path::Path::new(&cnf_path).exists() { // If config no exsist, make
         File::create(&cnf_path).expect("Config file creation error. Do you have the right perms?");
-        println!("Created config.");
+        // println!("Created config.");
     } else {
-        println!("Reading config!")
+        // println!("Reading config!")
     }
 
 
     // IF CONTENTS IN FILE then skip this:
-    let mut config = File::open(&cnf_path).expect("Can't open config file");
+    let mut config = File::open(&cnf_path).expect("Can't open config file!");
     let contents = BufReader::new(&config).lines();
     let mut images: Vec<String> = Vec::new();
 
-    dbg!(&contents);
+    // dbg!(&contents);
     if contents.count() == 0 {
         // write mode
-        config = File::create(&cnf_path).expect("Can't open config file");
+        config = File::create(&cnf_path).expect("Can't create config file!");
         // Parse image list into a vec!
         // Maybe convert to json and write to file?
         // Filter to be any type of image! FEH supports these so it will use them:
@@ -73,17 +74,27 @@ fn main() {
             .filter(|e| (format!("{:?}",e.as_ref().unwrap()).contains(".jpeg")||format!("{:?}",e.as_ref().unwrap()).contains(".jpg")||format!("{:?}",e.as_ref().unwrap()).contains(".png")||format!("{:?}",e.as_ref().unwrap()).contains(".pnm")||format!("{:?}",e.as_ref().unwrap()).contains(".tiff")||format!("{:?}",e.as_ref().unwrap()).contains(".bmp")||format!("{:?}",e.as_ref().unwrap()).contains(".gif"))) 
             .map(|dir_entry| dir_entry.unwrap().path().to_str().unwrap().to_owned())
             .collect();
-        dbg!(&images); // now we need to write this to a config or file of sometype
+        // dbg!(&images); // now we need to write this to a config or file of sometype
         // when the vector is generated or read in, use this to choose and return
         for img in &images {
             // write image to file
             println!("{}",&img);
             writeln!(&mut config, "{}", &img).unwrap();
         }
-    }
-
-    // read lines in config file
-
-    // let target_img = images.choose(&mut rand::thread_rng()).expect("failed to randomly choose an image");
-//    println!("RETURNED IMAGE: {:?}",target_img);
+    } 
+    // println!("Config was created!");
+    // READ entire file in, print first line, write rest back to file 
+    let mut file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&cnf_path)
+        .expect("Error opening the config file!");
+    println!(); // return the first line!
+    let mut lines = BufReader::new(file).lines().skip(1)
+        .map(|x| x.unwrap())
+        .collect::<Vec<String>>();
+    dbg!(&lines);
+    lines.shuffle(&mut thread_rng());
+    println!("{}",&lines.pop().expect("Error reading the line!"));
+    fs::write(&cnf_path, lines.clone()).expect("Can't write back to config!");
 }
