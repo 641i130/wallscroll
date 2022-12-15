@@ -84,12 +84,7 @@ fn main() {
     } 
     // println!("Config was created!");
     // READ entire file in, print first line, write rest back to file 
-    let mut file = OpenOptions::new()
-        .read(true)
-        .open(&cnf_path)
-        .expect("Error opening the config file!");
-    println!(); // return the first line!
-    let mut lines = BufReader::new(file).lines()
+    let mut lines = BufReader::new(File::open(&cnf_path).expect("File read error.")).lines()
         .map(|x| x.unwrap())
         .collect::<Vec<String>>();
     dbg!(&lines);
@@ -97,12 +92,11 @@ fn main() {
     println!("after shuff");
     dbg!(&lines);
     println!("{}",&lines.pop().expect("Error reading the line!"));
-    let mut file = OpenOptions::new()
-        .write(true)
-        .open(&cnf_path)
-        .expect("Error opening the config file!");
-    for l in lines {
+    let mut config = File::open(&cnf_path).expect("Can't open config file!");
+    for l in &lines {
         println!("Writing {} ",&l);
-        writeln!(&mut file, "{}",l).unwrap();
+        writeln!(&mut config, "{}",&l).unwrap();
     }
+    println!("After re-write");
+    dbg!(&lines);
 }
