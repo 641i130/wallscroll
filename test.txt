@@ -1,0 +1,8 @@
+./testing/more-wallpapers/lol.png
+./testing/more-wallpapers/1/lmao.jpeg
+./testing/more-wallpapers/1/lmao.jpg
+./testing/lol.bmp
+./testing/more-wallpapers/2/x9870979038.png
+./testing/more-wallpapers/2/eaotuhnsoeushtnaoeuhtns.png
+allpapers/2/eaotuhnsoeushtnaoeuhtns.png
+papers/2/eaotuhnsoeushtnaoeuhtns.png
