@@ -1,36 +1,30 @@
-use std::fs;
-use std::io;
-use std::io::{Write,Read,Seek,BufReader,BufRead};
+use std::fs::{OpenOptions};
+use std::io::{Read, BufRead, BufReader, Result, Write};
 use std::path::Path;
 
-fn main() -> io::Result<()> {
+fn main() -> Result<()> {
     // specify the path to the file
     let file_path = Path::new("./test.txt");
-    
+
     // open the file in read-write mode
-    let rfile = fs::OpenOptions::new()
+    let file = OpenOptions::new()
         .read(true)
-        .write(false)
-        .open(file_path)?;
-
-    let wfile = fs::OpenOptions::new()
-        .read(false)
         .write(true)
+        .create(true)
         .open(file_path)?;
-
-    let mut reader = io::BufReader::new(rfile);
-    let mut writer = io::BufWriter::new(wfile);
 
     // read the first line from the file
+    let mut reader = BufReader::new(&file);
     let mut first_line = String::new();
     reader.read_line(&mut first_line)?;
     println!("{first_line}");
-
-    // write the remaining lines to the file, skipping the first line
-    let mut lines = String::new();
-    reader.read_to_string(&mut lines)?;
-    dbg!(&lines);
-    writer.write_all(lines.as_bytes())?;
+    
+    let lines = reader.lines().skip(1)
+        .map(|x| x.unwrap())
+        .collect::<Vec<String>>().join("\n");
+    std::fs::write("./test.txt", lines).expect("Can't write");
+    //file.write_all(lines.as_bytes())?;
 
     Ok(())
 }
+

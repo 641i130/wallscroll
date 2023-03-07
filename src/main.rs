@@ -3,7 +3,7 @@ use std::{env,fs};
 use walkdir::WalkDir;
 use rand::prelude::SliceRandom;
 use dirs::home_dir;
-use std::fs::{File,OpenOptions};
+use std::fs::{File};
 use std::io::{BufReader,BufRead,Write};
 use rand::thread_rng;
 
@@ -18,12 +18,12 @@ fn main() {
         match arg.as_ref() {
             "-path" => {
                 arg_path = args[i + 1].parse::<String>().unwrap();
-                println!("{}", format!("arg_path : {}", arg_path).bright_purple());
+                println!("{}", format!("arg_path : {arg_path}").bright_purple());
                 i += 1;
             }
             "-name" => {
                 arg_name = args[i + 1].parse::<String>().unwrap();
-                println!("{}", format!("arg_name : {}", arg_name).bright_purple());
+                println!("{}", format!("arg_name : {arg_name}").bright_purple());
                 i += 1;
             }
             "-h" => {
@@ -33,11 +33,11 @@ fn main() {
             _ => i += 1,
         }
     }
-    if arg_path == "" {
+    if arg_path.is_empty() {
         eprintln!("Please provide a folder path using the '-path' argument.");
         std::process::exit(1); //exit with error
     }
-    if arg_name == "" {
+    if arg_name.is_empty() {
         eprintln!("Please provide a collection name for the images found using the '-name' argument.");
         std::process::exit(1); //exit with error
     }
